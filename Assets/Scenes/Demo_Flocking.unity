@@ -1257,35 +1257,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a70ef59591ab02c408ce0a83df2727c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Obstacles:
-  - {fileID: 1960878367}
-  - {fileID: 417402680}
-  - {fileID: 698900705}
-  - {fileID: 38863963}
-  - {fileID: 7187985}
-  - {fileID: 1181193350}
-  - {fileID: 1135155404}
-  - {fileID: 1313414628}
-  - {fileID: 492645357}
-  - {fileID: 1639766398}
-  - {fileID: 2089558132}
-  - {fileID: 1197083312}
-  - {fileID: 813306668}
-  - {fileID: 1793850234}
-  - {fileID: 1966240455}
-  - {fileID: 1273282684}
-  - {fileID: 1649745664}
-  - {fileID: 1959210453}
-  - {fileID: 2010150270}
-  - {fileID: 281999220}
-  - {fileID: 1148214724}
-  Bounds: {fileID: 735960364}
-  TickDuration: 1
-  TickDurationSeparationEnemy: 0.01
-  TickDurationRandom: 1
-  BoidIncr: 100
-  useFlocking: 1
-  BatchSize: 200
   flocks:
   - PrefabBoid: {fileID: 1138522166324048232, guid: 1b7bb4e6c0d12884c97216ff0bcde98f, type: 3}
     name: Boids
@@ -1335,6 +1306,35 @@ MonoBehaviour:
     visibility: 20
     bounceWall: 1
     mAutonomous: []
+  Obstacles:
+  - {fileID: 1960878367}
+  - {fileID: 417402680}
+  - {fileID: 698900705}
+  - {fileID: 38863963}
+  - {fileID: 7187985}
+  - {fileID: 1181193350}
+  - {fileID: 1135155404}
+  - {fileID: 1313414628}
+  - {fileID: 492645357}
+  - {fileID: 1639766398}
+  - {fileID: 2089558132}
+  - {fileID: 1197083312}
+  - {fileID: 813306668}
+  - {fileID: 1793850234}
+  - {fileID: 1966240455}
+  - {fileID: 1273282684}
+  - {fileID: 1649745664}
+  - {fileID: 1959210453}
+  - {fileID: 2010150270}
+  - {fileID: 281999220}
+  - {fileID: 1148214724}
+  Bounds: {fileID: 735960364}
+  TickDuration: 1
+  TickDurationSeparationEnemy: 0.01
+  TickDurationRandom: 1
+  BoidIncr: 1000
+  useFlocking: 1
+  BatchSize: 500
 --- !u!4 &875704705
 Transform:
   m_ObjectHideFlags: 0

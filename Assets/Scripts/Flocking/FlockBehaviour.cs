@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 public class FlockBehaviour : MonoBehaviour
 {
     List<Obstacle> mObstacles = new List<Obstacle>();
+    public List<Flock> flocks = new List<Flock>();
 
     [SerializeField]
     GameObject[] Obstacles;
@@ -13,17 +14,13 @@ public class FlockBehaviour : MonoBehaviour
     [SerializeField]
     BoxCollider2D Bounds;
 
-    
-
     public float TickDuration = 1.0f;
     public float TickDurationSeparationEnemy = 0.1f;
     public float TickDurationRandom = 1.0f;
 
-    public int BoidIncr = 100;
+    public int BoidIncr = 1000;
     public bool useFlocking = false;
     public int BatchSize = 100;
-
-    public List<Flock> flocks = new List<Flock>();
 
     void Reset()
     {
@@ -81,8 +78,7 @@ public class FlockBehaviour : MonoBehaviour
 
     void HandleInputs()
     {
-        if (EventSystem.current.IsPointerOverGameObject() ||
-           enabled == false)
+        if (EventSystem.current.IsPointerOverGameObject() ||  enabled == false)
         {
             return;
         }
@@ -95,12 +91,12 @@ public class FlockBehaviour : MonoBehaviour
 
     void AddBoids(int count)
     {
-        for (int i = 0; i < count; ++i)
+        for (int i = 0; i < count; ++i) //loops through the number of boids that should be added
         {
-            float x = Random.Range(Bounds.bounds.min.x, Bounds.bounds.max.x);
+            float x = Random.Range(Bounds.bounds.min.x, Bounds.bounds.max.x); //determines an x and y that will be the location the boid is spawned in
             float y = Random.Range(Bounds.bounds.min.y, Bounds.bounds.max.y);
 
-            AddBoid(x, y, flocks[0]);
+            AddBoid(x, y, flocks[0]); //cals add boid function
         }
         flocks[0].numBoids += count;
     }
@@ -199,7 +195,7 @@ public class FlockBehaviour : MonoBehaviour
                             yield return null;
                         }
                     }
-                    yield return null;
+                    //yield return null;
                 }
             }
             yield return new WaitForSeconds(TickDuration);
@@ -207,24 +203,16 @@ public class FlockBehaviour : MonoBehaviour
     }
 
 
-    void SeparationWithEnemies_Internal(
-      List<Autonomous> boids,
-      List<Autonomous> enemies,
-      float sepDist,
-      float sepWeight)
+    void SeparationWithEnemies_Internal(List<Autonomous> boids, List<Autonomous> enemies, float sepDist, float sepWeight)
     {
         for (int i = 0; i < boids.Count; ++i)
         {
             for (int j = 0; j < enemies.Count; ++j)
             {
-                float dist = (
-                  enemies[j].transform.position -
-                  boids[i].transform.position).magnitude;
+                float dist = (enemies[j].transform.position - boids[i].transform.position).magnitude;
                 if (dist < sepDist)
                 {
-                    Vector3 targetDirection = (
-                      boids[i].transform.position -
-                      enemies[j].transform.position).normalized;
+                    Vector3 targetDirection = (boids[i].transform.position - enemies[j].transform.position).normalized;
 
                     boids[i].TargetDirection += targetDirection;
                     boids[i].TargetDirection.Normalize();
@@ -269,18 +257,15 @@ public class FlockBehaviour : MonoBehaviour
                 if (flock.useAvoidObstaclesRule)
                 {
                     List<Autonomous> autonomousList = flock.mAutonomous;
+                    int obstacleCount = mObstacles.Count; 
                     for (int i = 0; i < autonomousList.Count; ++i)
                     {
-                        for (int j = 0; j < mObstacles.Count; ++j)
+                        for (int j = 0; j < obstacleCount; ++j)
                         {
-                            float dist = (
-                              mObstacles[j].transform.position -
-                              autonomousList[i].transform.position).magnitude;
+                            float dist = (mObstacles[j].transform.position - autonomousList[i].transform.position).magnitude;
                             if (dist < mObstacles[j].AvoidanceRadius)
                             {
-                                Vector3 targetDirection = (
-                                  autonomousList[i].transform.position -
-                                  mObstacles[j].transform.position).normalized;
+                                Vector3 targetDirection = (autonomousList[i].transform.position - mObstacles[j].transform.position).normalized;
 
                                 autonomousList[i].TargetDirection += targetDirection * flock.weightAvoidObstacles;
                                 autonomousList[i].TargetDirection.Normalize();
