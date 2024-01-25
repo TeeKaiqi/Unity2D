@@ -1332,7 +1332,7 @@ MonoBehaviour:
   TickDuration: 1
   TickDurationSeparationEnemy: 0.01
   TickDurationRandom: 1
-  BoidIncr: 1000
+  BoidIncr: 900
   useFlocking: 1
   BatchSize: 500
 --- !u!4 &875704705

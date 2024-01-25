@@ -72,6 +72,10 @@ public class FlockBehaviour : MonoBehaviour
     void Update()
     {
         HandleInputs();
+    }
+
+    private void FixedUpdate()
+    {
         Rule_CrossBorder();
         Rule_CrossBorder_Obstacles();
     }
@@ -187,6 +191,7 @@ public class FlockBehaviour : MonoBehaviour
                 foreach (Flock flock in flocks)
                 {
                     List<Autonomous> autonomousList = flock.mAutonomous;
+
                     for (int i = 0; i < autonomousList.Count; ++i)
                     {
                         Execute(flock, i);
