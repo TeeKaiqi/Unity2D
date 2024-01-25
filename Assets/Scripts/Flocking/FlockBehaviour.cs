@@ -18,9 +18,9 @@ public class FlockBehaviour : MonoBehaviour
     public float TickDurationSeparationEnemy = 0.1f;
     public float TickDurationRandom = 1.0f;
 
-    private int BoidIncr = 1000;
+    private int BoidIncr = 900; //change the boid increase to that one press can increase the boids to 1k
     public bool useFlocking = false;
-    private int BatchSize = 10;
+    private int BatchSize = 10; //decreased the batchsize to improve the frame rates 
 
     void Reset()
     {
@@ -35,17 +35,17 @@ public class FlockBehaviour : MonoBehaviour
         // Randomize obstacles placement.
         for (int i = 0; i < Obstacles.Length; ++i)
         {
-            float x = Random.Range(Bounds.bounds.min.x, Bounds.bounds.max.x);
+            float x = Random.Range(Bounds.bounds.min.x, Bounds.bounds.max.x); //randomise the obstacle position within the boundaries
             float y = Random.Range(Bounds.bounds.min.y, Bounds.bounds.max.y);
             Obstacles[i].transform.position = new Vector3(x, y, 0.0f);
-            Obstacle obs = Obstacles[i].AddComponent<Obstacle>();
+            Obstacle obs = Obstacles[i].AddComponent<Obstacle>(); //add obstacle to obstacles
             Autonomous autono = Obstacles[i].AddComponent<Autonomous>();
             autono.MaxSpeed = 1.0f;
             obs.mCollider = Obstacles[i].GetComponent<CircleCollider2D>();
             mObstacles.Add(obs);
         }
 
-        foreach (Flock flock in flocks)
+        foreach (Flock flock in flocks) //create initial flocks
         {
             CreateFlock(flock);
         }
@@ -58,11 +58,11 @@ public class FlockBehaviour : MonoBehaviour
         StartCoroutine(Coroutine_Random_Motion_Obstacles());
     }
 
-    void CreateFlock(Flock flock)
+    void CreateFlock(Flock flock) 
     {
         for (int i = 0; i < flock.numBoids; ++i)
         {
-            float x = Random.Range(Bounds.bounds.min.x, Bounds.bounds.max.x);
+            float x = Random.Range(Bounds.bounds.min.x, Bounds.bounds.max.x); //randomise boid position within the boundaries
             float y = Random.Range(Bounds.bounds.min.y, Bounds.bounds.max.y);
 
             AddBoid(x, y, flock);
@@ -76,7 +76,7 @@ public class FlockBehaviour : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Rule_CrossBorder();
+        Rule_CrossBorder(); //moved these two functions to the fixed update so that they are called every fixed frame, probably better for frame rate
         Rule_CrossBorder_Obstacles();
     }
 
@@ -140,7 +140,8 @@ public class FlockBehaviour : MonoBehaviour
         {
             Autonomous other = flock.mAutonomous[j];
             float dist = (curr.transform.position - other.transform.position).magnitude;
-            if (i != j)
+            if (i != j) //restructured the execute code so that it checks that the (i!=j) before executing the rest 
+                //the previous code checks (i!=j) && flock visibility before having if (i !=j) which isn't the best
             {
                 if (dist < flock.separationDistance)
                 {
@@ -202,19 +203,19 @@ public class FlockBehaviour : MonoBehaviour
           (steerPos - curr.transform.position) * (flock.useCohesionRule ? flock.weightCohesion : 0.0f);
     }
 
-    IEnumerator Coroutine_Flocking()
+    IEnumerator Coroutine_Flocking() //coroutine responsible for the flocking behaviours
     {
         while (true)
         {
-            if (useFlocking)
+            if (useFlocking) //checks if the flocking is enabled
             {
                 foreach (Flock flock in flocks)
                 {
                     List<Autonomous> autonomousList = flock.mAutonomous;
 
-                    for (int i = 0; i < autonomousList.Count; ++i)
+                    for (int i = 0; i < autonomousList.Count; ++i) //iterates through each boid in the flock
                     {
-                        Execute(flock, i);
+                        Execute(flock, i); 
                         if (i % BatchSize == 0)
                         {
                             yield return null;
@@ -374,7 +375,7 @@ public class FlockBehaviour : MonoBehaviour
                         autonomousList[i].TargetSpeed /= 2.0f;
                     }
                 }
-                yield return null;
+                yield return null; //commented out
             }
             yield return new WaitForSeconds(TickDurationRandom);
         }
