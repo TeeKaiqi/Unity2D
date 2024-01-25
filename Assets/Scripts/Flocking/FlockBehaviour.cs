@@ -121,6 +121,87 @@ public class FlockBehaviour : MonoBehaviour
         return (a1.transform.position - a2.transform.position).magnitude;
     }
 
+    //void Execute(Flock flock, int i)
+    //{
+    //    Vector3 flockDir = Vector3.zero;
+    //    Vector3 separationDir = Vector3.zero;
+    //    Vector3 cohesionDir = Vector3.zero;
+
+    //    float speed = 0.0f;
+    //    float separationSpeed = 0.0f;
+
+    //    int count = 0;
+    //    int separationCount = 0;
+
+    //    float sqrVisibility = flock.visibility * flock.visibility; //calculating the square of values outside of the loop is better than computing square roots in the loop
+    //    float sqrSeparationDis = flock.separationDistance * flock.separationDistance; //calculate the square outside of the loop
+    //    Vector3 steerPos = Vector3.zero;
+
+    //    Autonomous curr = flock.mAutonomous[i];
+
+    //    for (int j = 0; j < flock.numBoids; ++j)
+    //    {
+    //        //Autonomous other = flock.mAutonomous[j];
+    //        //float dist = (curr.transform.position - other.transform.position).magnitude;
+
+    //        if (i != j) //moved the calculations above into the if statements so that it's not ran if the conditions aren't met
+    //        {
+    //            Autonomous other = flock.mAutonomous[j];
+    //            float distanceFromCurrToOther = (curr.transform.position - other.transform.position).magnitude; //calculates the distance from Curr to other
+
+    //            if (distanceFromCurrToOther < sqrVisibility) //compare the squared distance instead of using the square root operation
+    //            {
+    //                speed += other.Speed;
+    //                flockDir += other.TargetDirection;
+    //                steerPos += other.transform.position;
+    //                count++;
+    //            }
+    //            if (distanceFromCurrToOther < sqrSeparationDis)
+    //            {
+    //                Vector3 targetDirection = (curr.transform.position - other.transform.position).normalized;
+    //                separationDir += targetDirection;
+    //                separationSpeed += distanceFromCurrToOther * flock.weightSeparation;
+    //            }
+    //        }
+    //        //if (i != j && dist < flock.visibility)
+    //        //{
+    //        //    speed += other.Speed;
+    //        //    flockDir += other.TargetDirection;
+    //        //    steerPos += other.transform.position;
+    //        //    count++;
+    //        //}
+    //        //if (i != j)
+    //        //{
+    //        //    if (dist < flock.separationDistance)
+    //        //    {
+    //        //        Vector3 targetDirection = (curr.transform.position - other.transform.position).normalized;
+
+    //        //        separationDir += targetDirection;
+    //        //        separationSpeed += dist * flock.weightSeparation;
+    //        //    }
+    //        //}
+    //    }
+    //    if (count > 0)
+    //    {
+    //        speed = speed / count;
+    //        flockDir = flockDir / count;
+    //        flockDir.Normalize();
+
+    //        steerPos = steerPos / count;
+    //    }
+
+    //    if (separationCount > 0)
+    //    {
+    //        separationSpeed = separationSpeed / count;
+    //        separationDir = separationDir / separationSpeed;
+    //        separationDir.Normalize();
+    //    }
+
+    //    curr.TargetDirection = flockDir * speed * (flock.useAlignmentRule ? flock.weightAlignment : 0.0f) +
+    //      separationDir * separationSpeed * (flock.useSeparationRule ? flock.weightSeparation : 0.0f) +
+    //      (steerPos - curr.transform.position) * (flock.useCohesionRule ? flock.weightCohesion : 0.0f);
+    //}
+
     void Execute(Flock flock, int i)
     {
         Vector3 flockDir = Vector3.zero;
@@ -131,31 +212,34 @@ public class FlockBehaviour : MonoBehaviour
         float separationSpeed = 0.0f;
 
         int count = 0;
-        int separationCount = 0;
+        int separationCount = 0; // Added initialization
+
+        float sqrVisibility = flock.visibility * flock.visibility;
+        float sqrSeparationDis = flock.separationDistance * flock.separationDistance;
         Vector3 steerPos = Vector3.zero;
 
         Autonomous curr = flock.mAutonomous[i];
+
         for (int j = 0; j < flock.numBoids; ++j)
         {
-            Autonomous other = flock.mAutonomous[j];
-            float dist = (curr.transform.position - other.transform.position).magnitude;
-            if (i != j && dist < flock.visibility)
-            {
-                speed += other.Speed;
-                flockDir += other.TargetDirection;
-                steerPos += other.transform.position;
-                count++;
-            }
             if (i != j)
             {
-                if (dist < flock.separationDistance)
-                {
-                    Vector3 targetDirection = (
-                      curr.transform.position -
-                      other.transform.position).normalized;
+                Autonomous other = flock.mAutonomous[j];
+                float distanceFromCurrToOther = (curr.transform.position - other.transform.position).magnitude;
 
+                if (distanceFromCurrToOther < sqrVisibility)
+                {
+                    speed += other.Speed;
+                    flockDir += other.TargetDirection;
+                    steerPos += other.transform.position;
+                    count++;
+                }
+                if (distanceFromCurrToOther < sqrSeparationDis)
+                {
+                    Vector3 targetDirection = (curr.transform.position - other.transform.position).normalized;
                     separationDir += targetDirection;
-                    separationSpeed += dist * flock.weightSeparation;
+                    separationSpeed += distanceFromCurrToOther * flock.weightSeparation;
+                    separationCount++; // Increment separationCount
                 }
             }
         }
@@ -168,19 +252,17 @@ public class FlockBehaviour : MonoBehaviour
             steerPos = steerPos / count;
         }
 
-        if (separationCount > 0)
+        if (separationCount > 0) // Use separationCount instead of count
         {
-            separationSpeed = separationSpeed / count;
+            separationSpeed = separationSpeed / separationCount; // Use separationCount instead of count
             separationDir = separationDir / separationSpeed;
             separationDir.Normalize();
         }
 
-        curr.TargetDirection =
-          flockDir * speed * (flock.useAlignmentRule ? flock.weightAlignment : 0.0f) +
-          separationDir * separationSpeed * (flock.useSeparationRule ? flock.weightSeparation : 0.0f) +
-          (steerPos - curr.transform.position) * (flock.useCohesionRule ? flock.weightCohesion : 0.0f);
+        curr.TargetDirection = flockDir * speed * (flock.useAlignmentRule ? flock.weightAlignment : 0.0f) +
+            separationDir * separationSpeed * (flock.useSeparationRule ? flock.weightSeparation : 0.0f) +
+            (steerPos - curr.transform.position) * (flock.useCohesionRule ? flock.weightCohesion : 0.0f);
     }
-
 
     IEnumerator Coroutine_Flocking()
     {
